@@ -11,6 +11,7 @@ app.config['CONFIG'] = yaml.load(configStr)
 app.config['STORMPATH_API_KEY_FILE'] = app.config['CONFIG']['stormpath']['api_key_file']
 app.config['STORMPATH_APPLICATION'] = app.config['CONFIG']['stormpath']['app_name']
 app.config['STORMPATH_ENABLE_REGISTRATION'] = False
+StormpathManager(app)
 
 
 from views import elastatus as elastatus
