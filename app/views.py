@@ -2,12 +2,13 @@ from flask import *
 import os
 from decorators import validate_account_and_region
 from aws import connect, route53
-
+from flask.ext.stormpath import login_required, user
 
 elastatus  = Blueprint('elastatus', __name__)
 
 
 @elastatus.route('/')
+@login_required
 def index():
     return redirect('/%s/%s/%s' % (current_app.config['CONFIG']['default_account'],
                                    current_app.config['CONFIG']['default_region'],
@@ -15,6 +16,7 @@ def index():
 
 
 @elastatus.route('/<account>/<region>/ec2')
+@login_required
 @validate_account_and_region
 def ec2(account, region):
     c = connect(account, region, 'ec2')
@@ -23,6 +25,7 @@ def ec2(account, region):
 
 
 @elastatus.route('/<account>/<region>/ebs')
+@login_required
 @validate_account_and_region
 def ebs(account, region):
     c = connect(account, region, 'ebs')
@@ -31,6 +34,7 @@ def ebs(account, region):
 
 
 @elastatus.route('/<account>/<region>/snapshots')
+@login_required
 @validate_account_and_region
 def snapshots(account, region):
     c = connect(account, region, 'ec2')
@@ -39,6 +43,7 @@ def snapshots(account, region):
 
 
 @elastatus.route('/<account>/<region>/autoscale')
+@login_required
 @validate_account_and_region
 def asg(account, region):
     c = connect(account, region, 'autoscale')
@@ -47,6 +52,7 @@ def asg(account, region):
 
 
 @elastatus.route('/<account>/<region>/elb')
+@login_required
 @validate_account_and_region
 def elb(account, region):
     c = connect(account, region, 'elb')
@@ -55,6 +61,7 @@ def elb(account, region):
 
 
 @elastatus.route('/<account>/<region>/sg/<id>')
+@login_required
 @validate_account_and_region
 def sg(account, region, id):
     c = connect(account, region,'ec2')
@@ -63,6 +70,7 @@ def sg(account, region, id):
 
 
 @elastatus.route('/<account>/<region>/elasticache')
+@login_required
 @validate_account_and_region
 def elasticache(account, region):
     c = connect(account, region, 'elasticache')
@@ -72,6 +80,7 @@ def elasticache(account, region):
 
 
 @elastatus.route('/<account>/<region>/route53')
+@login_required
 def r53(account, region):
     c, domain, zone_id = route53()    
     r = list()
@@ -88,6 +97,7 @@ def r53(account, region):
 
 
 @elastatus.route('/<account>/<region>/rds')
+@login_required
 def rds(account, region):
     c = connect(account, region, 'rds')
     db_instances = c.get_all_dbinstances()
@@ -95,6 +105,7 @@ def rds(account, region):
 
 
 @elastatus.route('/<account>/<region>/dynamodb')
+@login_required
 def dynamodb(account, region):
     c = connect(account, region, 'dynamodb')
     tables = c.list_tables()
@@ -106,6 +117,7 @@ def dynamodb(account, region):
 
 
 @elastatus.route('/<account>/<region>/cloudformation')
+@login_required
 def cloudformation(account, region):
     c = connect(account, region, 'cloudformation')
     stacks = c.describe_stacks()
@@ -113,6 +125,7 @@ def cloudformation(account, region):
 
 
 @elastatus.route('/<account>/<region>/cloudformation/<stack_name>.json')
+@login_required
 def get_template(account, region, stack_name):
     c = connect(account, region, 'cloudformation')
     template = c.get_template(stack_name)
@@ -123,11 +136,13 @@ def get_template(account, region, stack_name):
 
 
 @elastatus.route('/<account>/<region>/cloudwatch')
+@login_required
 def cloudwatch(account, region):
     return render_template('cloudwatch.html')
 
 
 @elastatus.route('/<account>/<region>/sns')
+@login_required
 def sns(account, region):
     c = connect(account, region, 'sns')
     subscriptions = c.get_all_subscriptions()
@@ -136,6 +151,7 @@ def sns(account, region):
 
 
 @elastatus.route('/<account>/<region>/redshift')
+@login_required
 def redshift(account, region):
     c = connect(account, region, 'redshift')
     clusters = c.describe_clusters()
@@ -144,6 +160,7 @@ def redshift(account, region):
 
 
 @elastatus.route('/<account>/<region>/sqs')
+@login_required
 def sqs(account, region):
     c = connect(account, region, 'sqs')
     queues = list()
